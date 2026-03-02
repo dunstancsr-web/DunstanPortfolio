@@ -210,9 +210,9 @@ body {
 .theme-toggle::after {
   content: attr(data-mode-label);
   position: absolute;
-  top: 50%;
-  left: calc(100% + 0.46rem);
-  transform: translateY(-50%) translateX(-4px) scale(0.98);
+  top: calc(100% + 0.36rem);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px) scale(0.98);
   opacity: 0;
   pointer-events: none;
   white-space: nowrap;
@@ -236,7 +236,7 @@ body {
 .theme-toggle:hover::after,
 .theme-toggle:focus-visible::after {
   opacity: 1;
-  transform: translateY(-50%) translateX(0) scale(1);
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 :root[data-theme="dark"] .nav-wrap {
