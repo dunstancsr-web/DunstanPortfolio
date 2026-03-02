@@ -82,10 +82,18 @@ body {
 
 h1 {
   margin: 0;
-  font-size: clamp(2rem, 4.8vw, 3.4rem);
+  font-size: clamp(1.6rem, 3.6vw, 2.6rem);
   line-height: 1.12;
   letter-spacing: -0.03em;
-  max-width: 15ch;
+  max-width: 28ch;
+}
+
+.hero-subtitle {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .hero-copy {
@@ -141,6 +149,7 @@ h2 {
   border-radius: var(--radius);
   padding: 1.2rem;
   box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
 }
 
 .project-type {
@@ -161,12 +170,35 @@ h3 {
 .project-card > p {
   margin: 0.6rem 0;
   color: #2f2f31;
+  overflow-wrap: anywhere;
 }
 
 .project-card ul {
   margin: 0;
   padding-left: 1.15rem;
   color: var(--muted);
+}
+
+.project-link {
+  display: inline-block;
+  color: #005fc7;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
+  padding: 0.42rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 113, 227, 0.28);
+  background: rgba(0, 113, 227, 0.06);
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.project-link:hover,
+.project-link:focus-visible {
+  color: #004a9c;
+  border-color: rgba(0, 113, 227, 0.42);
+  background: rgba(0, 113, 227, 0.12);
+  text-decoration: none;
 }
 
 .site-footer {
@@ -179,14 +211,4 @@ h3 {
   padding: 1rem 0 2rem;
   color: var(--muted);
   font-size: 0.92rem;
-}
-
-@media (min-width: 760px) {
-  .project-card {
-    grid-column: span 6;
-  }
-
-  .project-card:nth-child(3) {
-    grid-column: span 12;
-  }
 }
