@@ -1,12 +1,30 @@
 :root {
+  --bg-top: #ffffff;
   --bg: #f5f5f7;
   --surface: #ffffff;
   --text: #1d1d1f;
   --muted: #6e6e73;
+  --body-copy: #2f2f31;
   --line: #d2d2d7;
   --accent: #0071e3;
+  --project-link: #005fc7;
+  --project-link-hover: #004a9c;
   --radius: 18px;
   --shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+:root[data-theme="dark"] {
+  --bg-top: #171d2a;
+  --bg: #0b0f17;
+  --surface: #121827;
+  --text: #eef3ff;
+  --muted: #b0bacf;
+  --body-copy: #d6def0;
+  --line: rgba(182, 199, 235, 0.22);
+  --accent: #76adff;
+  --project-link: #8fb8ff;
+  --project-link-hover: #c0d7ff;
+  --shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
 }
 
 * {
@@ -21,7 +39,7 @@ body {
   margin: 0;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at top, #ffffff 0%, var(--bg) 60%);
+  background: radial-gradient(circle at top, var(--bg-top) 0%, var(--bg) 60%);
   line-height: 1.6;
 }
 
@@ -34,39 +52,245 @@ body {
   position: sticky;
   top: 0;
   z-index: 20;
-  border-bottom: 1px solid rgba(210, 210, 215, 0.6);
-  backdrop-filter: saturate(180%) blur(12px);
-  background: rgba(245, 245, 247, 0.82);
+  padding: 0.55rem 0;
+  background: transparent;
 }
 
 .nav-wrap {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 68px;
+  min-height: 62px;
+  padding: 0.42rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(130deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.02)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(192, 216, 255, 0.035));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 36px rgba(34, 54, 92, 0.14),
+    0 4px 10px rgba(255, 255, 255, 0.14);
+  backdrop-filter: saturate(210%) blur(4px);
+  -webkit-backdrop-filter: saturate(210%) blur(8px);
+}
+
+.nav-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(108deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 56%),
+    linear-gradient(290deg, rgba(147, 179, 255, 0.025), rgba(147, 179, 255, 0) 54%);
+}
+
+.nav-wrap::after {
+  content: "";
+  position: absolute;
+  left: 2.5%;
+  right: 2.5%;
+  top: 7%;
+  height: 34%;
+  border-radius: 999px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
 }
 
 .brand {
+  position: relative;
+  z-index: 1;
+  padding: 0.38rem 0.64rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.01);
   color: var(--text);
   text-decoration: none;
   font-weight: 700;
   letter-spacing: -0.02em;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+.nav-controls {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .nav {
+  position: relative;
   display: flex;
-  gap: 1.1rem;
+  z-index: 1;
+  gap: 0.56rem;
+  padding: 0.18rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  background: rgba(255, 255, 255, 0.009);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 1px 3px rgba(42, 63, 112, 0.016);
+  backdrop-filter: saturate(160%) blur(4px);
+  -webkit-backdrop-filter: saturate(160%) blur(4px);
 }
 
 .nav a {
-  color: var(--muted);
+  position: relative;
+  z-index: 1;
+  padding: 0.35rem 0.86rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #4a4a4d;
   text-decoration: none;
   font-weight: 500;
+  background: rgba(255, 255, 255, 0.006);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.28);
+  transition:
+    color 0.18s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .nav a:hover,
-.nav a:focus-visible {
+.nav a:focus-visible,
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
   color: var(--accent);
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 3px 8px rgba(42, 63, 112, 0.07),
+    0 0 0 1px rgba(255, 255, 255, 0.12);
+  transform: translateY(-0.5px);
+}
+
+.theme-toggle {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.08rem;
+  padding: 0.35rem 0.62rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.006);
+  color: #4a4a4d;
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.28);
+  cursor: pointer;
+  box-shadow: none;
+  overflow: visible;
+  transition:
+    color 0.18s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.theme-toggle::before {
+  content: attr(data-icon);
+  display: block;
+  line-height: 1;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.theme-toggle::after {
+  content: attr(data-mode-label);
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.46rem);
+  transform: translateY(-50%) translateX(-4px) scale(0.98);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.5);
+  color: #4a4a4d;
+  font-size: 0.69rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 10px rgba(34, 54, 92, 0.1);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.theme-toggle:hover::before,
+.theme-toggle:focus-visible::before {
+  transform: translateY(-0.5px) rotate(-8deg);
+}
+
+.theme-toggle:hover::after,
+.theme-toggle:focus-visible::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0) scale(1);
+}
+
+:root[data-theme="dark"] .nav-wrap {
+  border-color: rgba(196, 214, 255, 0.18);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(190, 220, 255, 0.12), rgba(190, 220, 255, 0) 42%),
+    linear-gradient(130deg, rgba(152, 188, 255, 0.12), rgba(152, 188, 255, 0.02)),
+    linear-gradient(180deg, rgba(15, 24, 41, 0.36), rgba(11, 16, 30, 0.26));
+}
+
+:root[data-theme="dark"] .nav-wrap::before {
+  background:
+    linear-gradient(108deg, rgba(226, 236, 255, 0.12), rgba(226, 236, 255, 0) 56%),
+    linear-gradient(290deg, rgba(116, 171, 255, 0.06), rgba(116, 171, 255, 0) 54%);
+}
+
+:root[data-theme="dark"] .brand,
+:root[data-theme="dark"] .nav,
+:root[data-theme="dark"] .nav a,
+:root[data-theme="dark"] .theme-toggle {
+  border-color: rgba(204, 220, 255, 0.16);
+  background: rgba(156, 186, 255, 0.06);
+}
+
+:root[data-theme="dark"] .nav a {
+  color: #d6e4ff;
+  text-shadow: none;
+}
+
+:root[data-theme="dark"] .theme-toggle {
+  color: #d6e4ff;
+  text-shadow: none;
+}
+
+:root[data-theme="dark"] .theme-toggle::after {
+  border-color: rgba(204, 220, 255, 0.24);
+  background: rgba(18, 29, 50, 0.88);
+  color: #d6e4ff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle::before,
+  .theme-toggle::after {
+    transition: none;
+  }
+}
+
+:root[data-theme="dark"] .nav a:hover,
+:root[data-theme="dark"] .nav a:focus-visible,
+:root[data-theme="dark"] .theme-toggle:hover,
+:root[data-theme="dark"] .theme-toggle:focus-visible {
+  background: rgba(156, 186, 255, 0.17);
+  border-color: rgba(204, 220, 255, 0.3);
 }
 
 .hero {
@@ -219,7 +443,7 @@ h3 {
 
 .project-card > p {
   margin: 0.6rem 0;
-  color: #2f2f31;
+  color: var(--body-copy);
   overflow-wrap: anywhere;
 }
 
@@ -231,7 +455,7 @@ h3 {
 
 .project-link {
   display: inline-block;
-  color: #005fc7;
+  color: var(--project-link);
   font-weight: 600;
   text-decoration: none;
   font-size: 0.92rem;
@@ -245,7 +469,7 @@ h3 {
 
 .project-link:hover,
 .project-link:focus-visible {
-  color: #004a9c;
+  color: var(--project-link-hover);
   border-color: rgba(0, 113, 227, 0.42);
   background: rgba(0, 113, 227, 0.12);
   text-decoration: none;
