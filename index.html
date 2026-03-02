@@ -14,12 +14,13 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="icon" type="image/png" href="assets/images/favicon.png" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="site-header">
       <div class="container nav-wrap">
-        <a class="brand" href="#home">Dunstan</a>
+        <a class="brand" href="#home">Dunstan's Portfolio</a>
         <nav class="nav" aria-label="Primary">
           <a href="#about">About</a>
           <a href="#projects">Projects</a>
@@ -29,35 +30,44 @@
 
     <main id="home">
       <section class="hero container">
-
-        <h1>Hi, I’m Dunstan.</h1>
-        <p class="hero-subtitle">Data Analyst | Project Manager | PMP Certified</p>
+        <div class="hero-layout">
+          <div class="hero-content">
+            <h1>Hi, I’m Dunstan.</h1>
+            <p class="hero-subtitle">Data Analyst | Project Manager | PMP Certified</p>
+            <p class="hero-actions">
+              <a class="hero-action" href="https://www.linkedin.com/in/stan-5h4vc73g2/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+                <svg class="hero-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.03-1.84-3.03-1.85 0-2.13 1.44-2.13 2.93v5.67H9.36V9h3.42v1.56h.05c.48-.9 1.64-1.84 3.38-1.84 3.62 0 4.29 2.39 4.29 5.49v6.24zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"></path>
+                </svg>
+              </a>
+            </p>
+          </div>
+          <div class="hero-image-slot">
+            <img class="hero-image" src="assets/images/profile-memoji.png" alt="Dunstan profile memoji" />
+          </div>
+        </div>
       </section>
 
       <section id="about" class="section container">
         <h2>About</h2>
         <p>
-          I am a Project Manager 3+ years experiece with a Data Analyst background, focused on turning complex goals
-          into structured delivery plans. I combine stakeholder communication, prioritization, and
-          analytics to keep projects on track and outcomes visible.
+          I’m a Project Manager with 3+ years of experience and a strong background in data analysis.
+          I turn complex goals into structured delivery plans and combine stakeholder communication,
+          prioritization, and analytics to keep projects on track and outcomes visible.
         </p>
-   
       </section>
 
       <section id="projects" class="section container">
         <div class="section-head">
           <h2>Projects</h2>
-          <p>Selected projects optimized for quick scanning.</p>
         </div>
 
         <div class="project-grid">
           <article class="project-card">
-            <p class="project-type">Project Management + Data Analytics</p>
             <h3>AI-enabled Streamlit Dashboard</h3>
             <p>
-              Built a UI/UX-friendly Streamlit application designed for Snowflake-readiness to
-              empower non-technical folks with self-service analytics, enabling data exploration,
-              data visualisation, before performing data extractions.
+              Engineered a user-friendly data portal that allows anyone to analyze and export Snowflake
+              data without needing SQL skills.
             </p>
             <p>
               <a class="project-link" href="https://reviewsdataverse.streamlit.app/" target="_blank" rel="noopener noreferrer"
@@ -65,36 +75,44 @@
               >
             </p>
             <ul>
-              <li>Highlights: AI-enabled insights that integrates context from the data visualizations</li>
-              <li>Tools: Streamlit, Python, Groq, Ollama</li>
+              <li><strong>Role:</strong> Project Manager + Data Analyst</li>
+              <li>
+                <strong>Impact:</strong> EHelped non-technical users explore and download data on 
+                their own, with faster access to insights and AI summaries.
+              </li>
+              <li><strong>Tools:</strong> Streamlit, Python, Groq, Ollama</li>
             </ul>
           </article>
 
           <article class="project-card">
-            <p class="project-type">Data & Reporting</p>
-            <h3>Executive KPI Dashboard Initiative</h3>
+            <h3>Data Visualization Tableau Dashboard</h3>
             <p>
-              Designed and delivered KPI dashboards for leadership, enabling faster decisions on
-              project risk, delivery pace, and resource allocation.
+              Built a tableau infographic dashboard to inform readers on Singapore's 2025 general election
+              results and provide aspiring candidates with insights on how to win in the next election.
+            </p>
+            <p>
+              <a class="project-link" href="https://public.tableau.com/views/SG2025ElectionsInfographics/MAIN?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" 
+              target="_blank" rel="noopener noreferrer"
+                >View Dashboard ↗</a
+              >
             </p>
             <ul>
-              <li>Role: Data Analyst / PM liaison</li>
-              <li>Impact: Placeholder for decision-making improvement</li>
-              <li>Tools: SQL, Excel, Tableau</li>
+              <li><strong>Role:</strong> Data Analyst</li>
+              <li><strong>Impact:</strong> Improved election storytelling clarity with interactive visuals and geographic context.</li>
+              <li><strong>Tools:</strong> Google BigQuery, SQL, Tableau, GeoJSON</li>
             </ul>
           </article>
 
           <article class="project-card">
-            <p class="project-type">Delivery Operations</p>
-            <h3>PMO Metrics Standardization</h3>
+            <h3>Data Migration Project</h3>
             <p>
-              Built a standardized reporting framework to improve consistency across teams and
-              increase visibility into portfolio-level performance.
+              Spearheaded a global data migration project across 7 APAC countries, driving 30% operational efficiency and 
+              a 45% compliance uplift to ensure readiness for a $9.5B business expansion
             </p>
             <ul>
-              <li>Role: Project Lead</li>
-              <li>Impact: Placeholder for reporting efficiency gain</li>
-              <li>Tools: Notion, Google Sheets, Power BI</li>
+              <li><strong>Role:</strong> Project Lead</li>
+              <li><strong>Impact:</strong> Delivered 30% operational efficiency and 45% compliance uplift across 7 APAC countries.</li>
+              <li><strong>Tools:</strong> SharePoint Admin, Power BI, Power Automate Flows</li>
             </ul>
           </article>
         </div>
