@@ -84,13 +84,6 @@ body {
   max-width: 52ch;
 }
 
-.kicker {
-  margin: 0 0 0.8rem;
-  color: var(--accent);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
 h1 {
   margin: 0;
   font-size: clamp(1.6rem, 3.6vw, 2.6rem);
@@ -105,13 +98,6 @@ h1 {
   font-size: 0.98rem;
   font-weight: 500;
   letter-spacing: 0.01em;
-}
-
-.hero-value {
-  margin: 0.7rem 0 0;
-  color: #36363a;
-  max-width: 52ch;
-  font-size: 1rem;
 }
 
 .hero-actions {
@@ -174,13 +160,6 @@ h1 {
   }
 }
 
-.hero-copy {
-  margin-top: 1rem;
-  max-width: 58ch;
-  color: var(--muted);
-  font-size: 1.06rem;
-}
-
 .section {
   padding: 2.4rem 0;
 }
@@ -207,11 +186,6 @@ h2 {
   margin-top: 0;
 }
 
-.hint {
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
 .section-head {
   display: flex;
   flex-wrap: wrap;
@@ -219,11 +193,6 @@ h2 {
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1rem;
-}
-
-.section-head p {
-  color: var(--muted);
-  margin: 0;
 }
 
 .project-grid {
@@ -242,27 +211,10 @@ h2 {
   overflow-wrap: anywhere;
 }
 
-.project-type {
-  color: var(--accent);
-  font-size: 0.84rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 0.4rem;
-}
-
 h3 {
   margin: 0;
   font-size: 1.22rem;
   letter-spacing: -0.01em;
-}
-
-.project-tagline {
-  margin: 0.32rem 0 0.5rem;
-  color: var(--muted);
-  font-size: 0.92rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
 }
 
 .project-card > p {
