@@ -101,3 +101,54 @@ systemThemeQuery.addEventListener("change", () => {
     applyThemeMode("auto");
   }
 });
+
+const navLinks = Array.from(document.querySelectorAll('.primary-nav a[href^="#"]'));
+
+if (navLinks.length > 0) {
+  const sectionIds = navLinks
+    .map((link) => link.getAttribute("href"))
+    .filter((href) => href && href.length > 1)
+    .map((href) => href.slice(1));
+
+  const trackedSectionIds = sectionIds.filter((id) => id !== "home");
+
+  const setActiveLink = (activeId) => {
+    navLinks.forEach((link) => {
+      const linkTarget = (link.getAttribute("href") || "").slice(1);
+      const isActive = linkTarget === activeId;
+
+      link.classList.toggle("is-active", isActive);
+
+      if (isActive) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  };
+
+  let currentActiveId = "home";
+  setActiveLink(currentActiveId);
+
+  const updateActiveLinkByScroll = () => {
+    const activationPoint = window.scrollY + window.innerHeight * 0.35;
+    let nextActiveId = "home";
+
+    trackedSectionIds.forEach((id) => {
+      const section = document.getElementById(id);
+
+      if (section && activationPoint >= section.offsetTop) {
+        nextActiveId = id;
+      }
+    });
+
+    if (nextActiveId !== currentActiveId) {
+      currentActiveId = nextActiveId;
+      setActiveLink(currentActiveId);
+    }
+  };
+
+  window.addEventListener("scroll", updateActiveLinkByScroll, { passive: true });
+  window.addEventListener("resize", updateActiveLinkByScroll);
+  updateActiveLinkByScroll();
+}

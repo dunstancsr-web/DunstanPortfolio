@@ -101,21 +101,7 @@ body {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
 }
 
-.brand {
-  position: relative;
-  z-index: 1;
-  padding: 0.38rem 0.64rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.01);
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.35);
-}
-
-.nav-controls {
+.primary-nav {
   position: relative;
   z-index: 1;
   display: flex;
@@ -123,23 +109,7 @@ body {
   gap: 0.45rem;
 }
 
-.nav {
-  position: relative;
-  display: flex;
-  z-index: 1;
-  gap: 0.56rem;
-  padding: 0.18rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.055);
-  background: rgba(255, 255, 255, 0.009);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    0 1px 3px rgba(42, 63, 112, 0.016);
-  backdrop-filter: saturate(160%) blur(4px);
-  -webkit-backdrop-filter: saturate(160%) blur(4px);
-}
-
-.nav a {
+.primary-nav > a {
   position: relative;
   z-index: 1;
   padding: 0.35rem 0.86rem;
@@ -158,8 +128,8 @@ body {
     transform 0.2s ease;
 }
 
-.nav a:hover,
-.nav a:focus-visible,
+.primary-nav > a:hover,
+.primary-nav > a:focus-visible,
 .theme-toggle:hover,
 .theme-toggle:focus-visible {
   color: var(--accent);
@@ -170,6 +140,16 @@ body {
     0 3px 8px rgba(42, 63, 112, 0.07),
     0 0 0 1px rgba(255, 255, 255, 0.12);
   transform: translateY(-0.5px);
+}
+
+.primary-nav > a.is-active {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 3px 8px rgba(42, 63, 112, 0.07),
+    0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .theme-toggle {
@@ -253,15 +233,13 @@ body {
     linear-gradient(290deg, rgba(116, 171, 255, 0.06), rgba(116, 171, 255, 0) 54%);
 }
 
-:root[data-theme="dark"] .brand,
-:root[data-theme="dark"] .nav,
-:root[data-theme="dark"] .nav a,
+:root[data-theme="dark"] .primary-nav > a,
 :root[data-theme="dark"] .theme-toggle {
   border-color: rgba(204, 220, 255, 0.16);
   background: rgba(156, 186, 255, 0.06);
 }
 
-:root[data-theme="dark"] .nav a {
+:root[data-theme="dark"] .primary-nav > a {
   color: #d6e4ff;
   text-shadow: none;
 }
@@ -285,12 +263,18 @@ body {
   }
 }
 
-:root[data-theme="dark"] .nav a:hover,
-:root[data-theme="dark"] .nav a:focus-visible,
+:root[data-theme="dark"] .primary-nav > a:hover,
+:root[data-theme="dark"] .primary-nav > a:focus-visible,
 :root[data-theme="dark"] .theme-toggle:hover,
 :root[data-theme="dark"] .theme-toggle:focus-visible {
   background: rgba(156, 186, 255, 0.17);
   border-color: rgba(204, 220, 255, 0.3);
+}
+
+:root[data-theme="dark"] .primary-nav > a.is-active {
+  background: rgba(156, 186, 255, 0.17);
+  border-color: rgba(204, 220, 255, 0.3);
+  color: var(--accent);
 }
 
 .hero {
