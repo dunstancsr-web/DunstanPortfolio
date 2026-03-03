@@ -44,8 +44,7 @@
       <div class="container nav-wrap" id="navGlass">
         <div class="nav-tab nav-buttons-tab">
           <nav class="primary-nav" aria-label="Primary">
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
+            <a href="#home">About</a>
             <a href="#projects">Projects</a>
           </nav>
         </div>
@@ -62,29 +61,30 @@
       <section class="hero container">
         <div class="hero-layout">
           <div class="hero-content">
-            <h1>Hi, I’m Dunstan.</h1>
+            <div class="hero-heading-row">
+              <h1>
+                Hi, I’m
+                <a
+                  class="hero-name-link"
+                  href="https://www.linkedin.com/in/stan-5h4vc73g2/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-tooltip="Let's Connect on Linkedin!"
+                  aria-label="Let's Connect on Linkedin!"
+                  >Dunstan</a
+                >
+              </h1>
+            </div>
             <p class="hero-subtitle">Data Analyst | Project Manager | PMP Certified</p>
-            <p class="hero-actions">
-              <a class="hero-action" href="https://www.linkedin.com/in/stan-5h4vc73g2/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
-                <svg class="hero-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.03-1.84-3.03-1.85 0-2.13 1.44-2.13 2.93v5.67H9.36V9h3.42v1.56h.05c.48-.9 1.64-1.84 3.38-1.84 3.62 0 4.29 2.39 4.29 5.49v6.24zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"></path>
-                </svg>
-              </a>
+            <p class="hero-about">
+              I translate complex goals into structured plans, using data and clear communication 
+              to drive project outcomes.
             </p>
           </div>
           <div class="hero-image-slot">
             <img class="hero-image" src="assets/images/profile-memoji.png" alt="Dunstan profile memoji" />
           </div>
         </div>
-      </section>
-
-      <section id="about" class="section container">
-        <h2>About</h2>
-        <p>
-          I’m a Project Manager with 3+ years of experience and a strong background in data analysis.
-          I turn complex goals into structured delivery plans and combine stakeholder communication,
-          prioritization, and analytics to keep projects on track and outcomes visible.
-        </p>
       </section>
 
       <section id="projects" class="section container">
@@ -133,12 +133,11 @@
             </ul>
           </article>
 
-          <article class="project-card">
+          <article class="project-card project-card-peek project-card-peek--portfolio" id="projectCardPortfolio">
             <h3>Dunstan's Portfolio: Custom AI-Assisted Web Architecture</h3>
             <p>
-              A bespoke, high-performance portfolio website built from the ground up without pre-made templates.
-              This project leverages "Vibe-Coding" using GitHub Copilot to translate high-level UI/UX intent into clean,
-              production-ready HTML5, CSS3, and JavaScript.
+              A high-performance portfolio website built from the ground up without pre-made templates.
+              Vibe-Coded using GitHub Copilot to translate high-level UI/UX intent into clean, production-ready site.
             </p>
             <p>
               <a class="project-link" href="https://dunstancsr-web.github.io/DunstanPortfolio/" target="_blank" rel="noopener noreferrer"
@@ -153,9 +152,19 @@
               </li>
               <li><strong>Tools:</strong> VS Code, GitHub Copilot (Core logic/style generation), GitHub Pages (Deployment), HTML5/CSS3/JS (Custom stack), Git (Version control)</li>
             </ul>
+            <button
+              class="project-reveal-btn project-reveal-btn--icon-only"
+              id="showProjectBtn3"
+              type="button"
+              aria-controls="projectCardPortfolio"
+              aria-label="Expand project details"
+              aria-expanded="false"
+              data-tooltip="Show More"
+              title="Show More"
+            ></button>
           </article>
 
-          <article class="project-card">
+          <article class="project-card project-card-peek project-card-peek--global-cutoff" id="projectCard4">
             <h3>Data Migration Project</h3>
             <p>
               Spearheaded a global data migration project across 7 APAC countries, driving 30% operational efficiency and 
@@ -166,12 +175,22 @@
               <li><strong>Impact:</strong> Delivered 30% operational efficiency and 45% compliance uplift across 7 APAC countries.</li>
               <li><strong>Tools:</strong> SharePoint Admin, Power BI, Power Automate Flows</li>
             </ul>
+            <button
+              class="project-reveal-btn"
+              id="showProjectBtn"
+              type="button"
+              aria-controls="projectCard4"
+              aria-label="Expand project details"
+              aria-expanded="false"
+            >
+              Show More
+            </button>
           </article>
         </div>
       </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer" id="siteFooter" hidden>
       <div class="container">
         <p>© <span id="year"></span> Dunstan. All rights reserved.</p>
       </div>

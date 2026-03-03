@@ -34,7 +34,7 @@ const updateToggleState = (mode, resolvedTheme) => {
 
   if (mode === "auto") {
     themeToggle.dataset.icon = "◐";
-    themeToggle.dataset.modeLabel = "Auto";
+    themeToggle.dataset.modeLabel = `Theme: Auto (${resolvedTheme})`;
     themeToggle.setAttribute("aria-label", `Theme mode: Auto (${resolvedTheme}). Switch mode`);
     themeToggle.title = `Theme: Auto (${resolvedTheme})`;
     themeToggle.setAttribute("aria-pressed", "false");
@@ -43,7 +43,7 @@ const updateToggleState = (mode, resolvedTheme) => {
 
   const isDark = mode === "dark";
   themeToggle.dataset.icon = isDark ? "☾" : "☀︎";
-  themeToggle.dataset.modeLabel = isDark ? "Dark" : "Light";
+  themeToggle.dataset.modeLabel = `Theme: ${isDark ? "Dark" : "Light"}`;
   themeToggle.setAttribute("aria-label", `Theme mode: ${mode}. Switch mode`);
   themeToggle.title = `Theme: ${mode}`;
   themeToggle.setAttribute("aria-pressed", String(isDark));
@@ -88,10 +88,12 @@ const updateGlassToggleState = (mode) => {
   }
 
   const isLiquid = mode === "liquid";
-  const modeLabel = isLiquid ? "LG On" : "LG Off";
+  const modeLabel = isLiquid ? "Accessibility: Off" : "Accessibility: On";
 
-  glassToggle.dataset.icon = isLiquid ? "◉" : "Aa";
+  glassToggle.dataset.icon = "Aa";
   glassToggle.dataset.modeLabel = modeLabel;
+  glassToggle.classList.toggle("is-accessibility-on", !isLiquid);
+  glassToggle.classList.toggle("is-accessibility-off", isLiquid);
   glassToggle.setAttribute("aria-label", `Liquid Glass: ${isLiquid ? "On" : "Off"}. Switch mode`);
   glassToggle.title = `Liquid Glass: ${isLiquid ? "On" : "Off"} (${isLiquid ? "Very Liquid" : "Readable"})`;
   glassToggle.setAttribute("aria-pressed", String(isLiquid));
@@ -165,6 +167,57 @@ systemThemeQuery.addEventListener("change", () => {
 });
 
 const navLinks = Array.from(document.querySelectorAll('.primary-nav a[href^="#"]'));
+const projectRevealButtons = Array.from(document.querySelectorAll(".project-reveal-btn[aria-controls]"));
+const siteFooter = document.getElementById("siteFooter");
+
+if (siteFooter) {
+  siteFooter.hidden = true;
+}
+
+projectRevealButtons.forEach((button) => {
+  const targetId = button.getAttribute("aria-controls");
+
+  if (!targetId) {
+    return;
+  }
+
+  const targetCard = document.getElementById(targetId);
+
+  if (!targetCard) {
+    return;
+  }
+
+  button.addEventListener("click", () => {
+    if (targetId === "projectCard4") {
+      targetCard.classList.add("is-expanded");
+      button.setAttribute("aria-expanded", "true");
+      button.setAttribute("aria-label", "Project details expanded");
+
+      if (siteFooter) {
+        siteFooter.hidden = false;
+      }
+
+      button.remove();
+      return;
+    }
+
+    const isExpanded = targetCard.classList.toggle("is-expanded");
+    const isIconOnly = button.classList.contains("project-reveal-btn--icon-only");
+
+    button.setAttribute("aria-expanded", String(isExpanded));
+
+    if (!isIconOnly) {
+      button.textContent = isExpanded ? "Show Less" : "Show More";
+    } else {
+      const tooltipText = isExpanded ? "Show Less" : "Show More";
+
+      button.title = tooltipText;
+      button.setAttribute("data-tooltip", tooltipText);
+    }
+
+    button.setAttribute("aria-label", isExpanded ? "Collapse project details" : "Expand project details");
+  });
+});
 
 if (navLinks.length > 0) {
   const sectionIds = navLinks
