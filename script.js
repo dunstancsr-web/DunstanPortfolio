@@ -1,7 +1,10 @@
 const yearElement = document.getElementById("year");
 const themeToggle = document.getElementById("themeToggle");
+const glassToggle = document.getElementById("glassToggle");
 const themeStorageKey = "dunstan-theme";
 const themeModes = ["auto", "light", "dark"];
+const glassStorageKey = "dunstan-glass-mode";
+const glassModes = ["liquid", "readable"];
 const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
 if (yearElement) {
@@ -79,6 +82,50 @@ try {
 
 applyThemeMode(initialMode);
 
+const updateGlassToggleState = (mode) => {
+  if (!glassToggle) {
+    return;
+  }
+
+  const isLiquid = mode === "liquid";
+  const modeLabel = isLiquid ? "LG On" : "LG Off";
+
+  glassToggle.dataset.icon = isLiquid ? "◉" : "Aa";
+  glassToggle.dataset.modeLabel = modeLabel;
+  glassToggle.setAttribute("aria-label", `Liquid Glass: ${isLiquid ? "On" : "Off"}. Switch mode`);
+  glassToggle.title = `Liquid Glass: ${isLiquid ? "On" : "Off"} (${isLiquid ? "Very Liquid" : "Readable"})`;
+  glassToggle.setAttribute("aria-pressed", String(isLiquid));
+};
+
+const applyGlassMode = (mode) => {
+  document.documentElement.setAttribute("data-glass-mode", mode);
+  updateGlassToggleState(mode);
+};
+
+const getNextGlassMode = (mode) => {
+  const modeIndex = glassModes.indexOf(mode);
+
+  if (modeIndex === -1 || modeIndex === glassModes.length - 1) {
+    return glassModes[0];
+  }
+
+  return glassModes[modeIndex + 1];
+};
+
+let initialGlassMode = "liquid";
+
+try {
+  const savedGlassMode = localStorage.getItem(glassStorageKey);
+
+  if (savedGlassMode && glassModes.includes(savedGlassMode)) {
+    initialGlassMode = savedGlassMode;
+  }
+} catch (error) {
+  initialGlassMode = "liquid";
+}
+
+applyGlassMode(initialGlassMode);
+
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
     const currentMode = document.documentElement.getAttribute("data-theme-mode") || "auto";
@@ -88,6 +135,21 @@ if (themeToggle) {
 
     try {
       localStorage.setItem(themeStorageKey, nextMode);
+    } catch (error) {
+      // no-op when storage is unavailable
+    }
+  });
+}
+
+if (glassToggle) {
+  glassToggle.addEventListener("click", () => {
+    const currentGlassMode = document.documentElement.getAttribute("data-glass-mode") || "liquid";
+    const nextGlassMode = getNextGlassMode(currentGlassMode);
+
+    applyGlassMode(nextGlassMode);
+
+    try {
+      localStorage.setItem(glassStorageKey, nextGlassMode);
     } catch (error) {
       // no-op when storage is unavailable
     }
@@ -131,7 +193,9 @@ if (navLinks.length > 0) {
   setActiveLink(currentActiveId);
 
   const updateActiveLinkByScroll = () => {
-    const activationPoint = window.scrollY + window.innerHeight * 0.35;
+    const headerElement = document.querySelector(".site-header");
+    const headerHeight = headerElement ? headerElement.offsetHeight : 0;
+    const activationPoint = window.scrollY + headerHeight + 1;
     let nextActiveId = "home";
 
     trackedSectionIds.forEach((id) => {
