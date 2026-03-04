@@ -483,18 +483,25 @@ body {
 }
 
 .hero {
-  padding: 3.7rem 0 1.2rem;
+  padding: 2.2rem 0 1.2rem;
 }
 
 .hero-layout {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr;
   align-items: start;
-  gap: clamp(0.12rem, 0.6vw, 0.3rem);
+  gap: clamp(0.85rem, 1.4vw, 1.15rem);
+  padding: clamp(0.9rem, 1.6vw, 1.2rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .hero-content {
-  max-width: 72ch;
+  grid-column: 2;
+  max-width: 68ch;
+  align-self: center;
 }
 
 .hero-heading-row {
@@ -560,9 +567,10 @@ h1 {
 }
 
 .hero-about {
-  margin: 0.7rem 0 0;
+  grid-column: 1 / -1;
+  margin: 0.4rem 0 0;
   color: var(--body-copy);
-  max-width: 72ch;
+  max-width: 90ch;
 }
 
 .hero-actions {
@@ -596,16 +604,31 @@ h1 {
 }
 
 .hero-image-slot {
-  --hero-memoji-radius: clamp(2.1rem, 4.5vw, 10rem);
-  width: calc(var(--hero-memoji-radius) * 2);
-  height: calc(var(--hero-memoji-radius) * 2);
+  grid-column: 1;
+  align-self: start;
+  --hero-memoji-size: clamp(4.8rem, 7vw, 6.4rem);
+  --hero-memoji-radius: clamp(0.85rem, 1.8vw, 1.35rem);
+  width: var(--hero-memoji-size);
+  height: var(--hero-memoji-size);
   border-radius: var(--hero-memoji-radius);
-  border: 0.3px solid rgba(210, 210, 215, 0.3);
+  border: 0.3px solid rgba(210, 210, 215, 0.12);
   background: linear-gradient(180deg, #ffffff 0%, #f1f2f6 100%);
   display: grid;
   place-items: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  margin-top: 0.1rem;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .hero-layout {
+    grid-template-columns: auto 1fr;
+    gap: 0.72rem;
+    padding: 0.8rem;
+  }
+
+  .hero-image-slot {
+    --hero-memoji-size: clamp(3.9rem, 20vw, 4.8rem);
+  }
 }
 
 .hero-image {
@@ -767,6 +790,10 @@ h3 {
   padding-bottom: 1rem;
 }
 
+#projectCardPortfolio.is-expanded {
+  padding-bottom: 1.6rem;
+}
+
 .project-card-peek.is-expanded::after {
   display: none;
 }
@@ -847,6 +874,26 @@ h3 {
 
 .project-reveal-btn[aria-expanded="true"]::after {
   transform: translateY(0.03rem) rotate(-135deg);
+}
+
+#showProjectBtn3[aria-expanded="true"] {
+  bottom: -0.6rem;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] #showProjectBtn3[aria-expanded="true"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+#showProjectBtn3[aria-expanded="true"]:hover,
+#showProjectBtn3[aria-expanded="true"]:focus-visible {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .project-reveal-btn:hover,
