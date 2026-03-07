@@ -1,5 +1,58 @@
 // Fade-in animation for sections
 document.addEventListener("DOMContentLoaded", () => {
+    // Parallax effect for projects section
+    const projectsSection = document.getElementById('projects');
+    const heroSection = document.querySelector('.microsite-hero');
+    if (projectsSection && heroSection) {
+      function onProjectsParallax() {
+        const scrollY = window.scrollY;
+        const heroRect = heroSection.getBoundingClientRect();
+        // Stronger parallax: projects move at 120% scroll speed
+        if (heroRect.bottom > 0) {
+          const parallaxY = scrollY * 1.2;
+          projectsSection.style.transform = `translateY(${-parallaxY}px)`;
+        } else {
+          projectsSection.style.transform = '';
+        }
+      }
+      window.addEventListener('scroll', onProjectsParallax, { passive: true });
+      onProjectsParallax();
+    }
+  // Parallax scaling/fading for Apple-style hero
+  const micrositeHero = document.querySelector('.microsite-hero');
+  const heroInner = document.querySelector('.microsite-hero-inner');
+  const heroImg = document.querySelector('.microsite-hero-image');
+  const heroTitle = document.querySelector('.microsite-hero-title');
+  const heroSubtitle = document.querySelector('.microsite-hero-subtitle');
+  const heroAbout = document.querySelector('.microsite-hero-about');
+  if (micrositeHero && heroInner && heroImg && heroTitle && heroSubtitle && heroAbout) {
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+    function onParallaxScroll() {
+      const scrollY = window.scrollY;
+      const heroRect = micrositeHero.getBoundingClientRect();
+      const windowH = window.innerHeight;
+      // Slightly slower fade/scale
+      const progress = clamp(2.2 * (1 - (heroRect.bottom / windowH)), 0, 1);
+      const scale = 1 - progress * 0.38;
+      const opacity = 1 - progress * 2.0;
+      // Move the whole hero intro up as it fades/shrinks
+      const baseTranslate = -progress * 120;
+      heroInner.style.transform = `translateY(${baseTranslate}px)`;
+      heroImg.style.transform = `scale(${scale + 0.14}) translateY(${-progress * 120 + baseTranslate}px)`;
+      heroImg.style.opacity = opacity;
+      heroTitle.style.transform = `scale(${scale}) translateY(${-progress * 120 + baseTranslate}px)`;
+      heroTitle.style.opacity = opacity;
+      heroSubtitle.style.transform = `scale(${scale}) translateY(${-progress * 120 + baseTranslate}px)`;
+      heroSubtitle.style.opacity = opacity;
+      heroAbout.style.transform = `scale(${scale}) translateY(${-progress * 120 + baseTranslate}px)`;
+      heroAbout.style.opacity = opacity;
+    }
+    window.addEventListener('scroll', onParallaxScroll, { passive: true });
+    window.addEventListener('resize', onParallaxScroll);
+    onParallaxScroll();
+  }
   const fadeSections = document.querySelectorAll(".fade-section, .section");
   const observer = new window.IntersectionObserver(
     (entries, obs) => {
@@ -18,6 +71,89 @@ document.addEventListener("DOMContentLoaded", () => {
     section.classList.remove("is-visible");
     observer.observe(section);
   });
+
+  // Phase 2: Experiment - Fetch and log projects.json
+  fetch('projects.json')
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => {
+      console.log('Loaded project data:', data);
+      // Phase 3: Dynamically add all project cards from JSON
+      if (Array.isArray(data) && data.length > 0) {
+        const projectGrid = document.querySelector('.project-grid');
+        if (projectGrid) {
+          data.forEach(project => {
+            const card = document.createElement('article');
+            card.className = 'project-card project-card--json';
+            // Render links if present
+            let linksHtml = '';
+            if (Array.isArray(project.links) && project.links.length > 0) {
+              linksHtml = '<div class="project-link-group" aria-label="Project links">';
+              project.links.forEach(link => {
+                linksHtml += `<a class="project-link" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label || 'View Project'}${link.badge ? ` <span class='project-link-badge'>${link.badge}</span>` : ''} ↗</a>`;
+              });
+              if (project.linkInfo) {
+                linksHtml += `<span class="project-link-info" tabindex="0" role="note" aria-label="${project.linkInfo}" data-tooltip="${project.linkInfo}">i</span>`;
+              }
+              linksHtml += '</div>';
+            }
+            card.innerHTML = `
+              <h3>${project.title}</h3>
+              <p>${project.summary}</p>
+              ${linksHtml}
+              <ul>
+                ${project.role ? `<li><strong>Role:</strong> ${project.role}</li>` : ''}
+                <li><strong>Impact:</strong> ${project.impact}</li>
+                <li><strong>Tools:</strong> ${Array.isArray(project.tools) ? project.tools.join(', ') : project.tools}</li>
+              </ul>
+            `;
+            projectGrid.appendChild(card);
+          });
+          // Apple-esque transition: animate cards as they scroll into view
+          const cards = projectGrid.querySelectorAll('.project-card');
+          const cardObserver = new window.IntersectionObserver(
+            (entries, obs) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('is-visible');
+                  // If hero is scaled, also scale the card
+                  if (document.body.classList.contains('hero-scaled')) {
+                    entry.target.classList.add('card-scaled');
+                  }
+                  obs.unobserve(entry.target);
+                }
+              });
+            },
+            { threshold: 0.18 }
+          );
+          cards.forEach(card => {
+            card.classList.remove('is-visible', 'card-scaled');
+            cardObserver.observe(card);
+          });
+
+          // Listen for hero scale changes and update visible cards
+          const updateCardScale = () => {
+            const heroScaled = document.body.classList.contains('hero-scaled');
+            cards.forEach(card => {
+              if (card.classList.contains('is-visible')) {
+                if (heroScaled) {
+                  card.classList.add('card-scaled');
+                } else {
+                  card.classList.remove('card-scaled');
+                }
+              }
+            });
+          };
+          window.addEventListener('scroll', updateCardScale, { passive: true });
+          updateCardScale();
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Error loading projects.json:', error);
+    });
 });
 const yearElement = document.getElementById("year");
 const themeToggle = document.getElementById("themeToggle");
@@ -191,9 +327,6 @@ const navLinks = Array.from(document.querySelectorAll('.primary-nav a[href^="#"]
 const projectRevealButtons = Array.from(document.querySelectorAll(".project-reveal-btn[aria-controls]"));
 const siteFooter = document.getElementById("siteFooter");
 
-if (siteFooter) {
-  siteFooter.hidden = true;
-}
 
 projectRevealButtons.forEach((button) => {
   const targetId = button.getAttribute("aria-controls");
