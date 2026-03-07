@@ -1,58 +1,5 @@
 // Fade-in animation for sections
 document.addEventListener("DOMContentLoaded", () => {
-    // Parallax effect for projects section
-    const projectsSection = document.getElementById('projects');
-    const heroSection = document.querySelector('.microsite-hero');
-    if (projectsSection && heroSection) {
-      function onProjectsParallax() {
-        const scrollY = window.scrollY;
-        const heroRect = heroSection.getBoundingClientRect();
-        // Stronger parallax: projects move at 120% scroll speed
-        if (heroRect.bottom > 0) {
-          const parallaxY = scrollY * 1.2;
-          projectsSection.style.transform = `translateY(${-parallaxY}px)`;
-        } else {
-          projectsSection.style.transform = '';
-        }
-      }
-      window.addEventListener('scroll', onProjectsParallax, { passive: true });
-      onProjectsParallax();
-    }
-  // Parallax scaling/fading for Apple-style hero
-  const micrositeHero = document.querySelector('.microsite-hero');
-  const heroInner = document.querySelector('.microsite-hero-inner');
-  const heroImg = document.querySelector('.microsite-hero-image');
-  const heroTitle = document.querySelector('.microsite-hero-title');
-  const heroSubtitle = document.querySelector('.microsite-hero-subtitle');
-  const heroAbout = document.querySelector('.microsite-hero-about');
-  if (micrositeHero && heroInner && heroImg && heroTitle && heroSubtitle && heroAbout) {
-    function clamp(val, min, max) {
-      return Math.max(min, Math.min(max, val));
-    }
-    function onParallaxScroll() {
-      const scrollY = window.scrollY;
-      const heroRect = micrositeHero.getBoundingClientRect();
-      const windowH = window.innerHeight;
-      // Slightly slower fade/scale
-      const progress = clamp(2.2 * (1 - (heroRect.bottom / windowH)), 0, 1);
-      const scale = 1 - progress * 0.38;
-      const opacity = 1 - progress * 2.0;
-      // Move the whole hero intro up as it fades/shrinks
-      const baseTranslate = -progress * 120;
-      heroInner.style.transform = `translateY(${baseTranslate}px)`;
-      heroImg.style.transform = `scale(${scale + 0.14}) translateY(${-progress * 120 + baseTranslate}px)`;
-      heroImg.style.opacity = opacity;
-      heroTitle.style.transform = `scale(${scale}) translateY(${-progress * 120 + baseTranslate}px)`;
-      heroTitle.style.opacity = opacity;
-      heroSubtitle.style.transform = `scale(${scale}) translateY(${-progress * 120 + baseTranslate}px)`;
-      heroSubtitle.style.opacity = opacity;
-      heroAbout.style.transform = `scale(${scale}) translateY(${-progress * 120 + baseTranslate}px)`;
-      heroAbout.style.opacity = opacity;
-    }
-    window.addEventListener('scroll', onParallaxScroll, { passive: true });
-    window.addEventListener('resize', onParallaxScroll);
-    onParallaxScroll();
-  }
   const fadeSections = document.querySelectorAll(".fade-section, .section");
   const observer = new window.IntersectionObserver(
     (entries, obs) => {
@@ -118,10 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                   entry.target.classList.add('is-visible');
-                  // If hero is scaled, also scale the card
-                  if (document.body.classList.contains('hero-scaled')) {
-                    entry.target.classList.add('card-scaled');
-                  }
                   obs.unobserve(entry.target);
                 }
               });
@@ -129,25 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
             { threshold: 0.18 }
           );
           cards.forEach(card => {
-            card.classList.remove('is-visible', 'card-scaled');
+            card.classList.remove('is-visible');
             cardObserver.observe(card);
           });
-
-          // Listen for hero scale changes and update visible cards
-          const updateCardScale = () => {
-            const heroScaled = document.body.classList.contains('hero-scaled');
-            cards.forEach(card => {
-              if (card.classList.contains('is-visible')) {
-                if (heroScaled) {
-                  card.classList.add('card-scaled');
-                } else {
-                  card.classList.remove('card-scaled');
-                }
-              }
-            });
-          };
-          window.addEventListener('scroll', updateCardScale, { passive: true });
-          updateCardScale();
         }
       }
     })
