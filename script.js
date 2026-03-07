@@ -1,3 +1,24 @@
+// Fade-in animation for sections
+document.addEventListener("DOMContentLoaded", () => {
+  const fadeSections = document.querySelectorAll(".fade-section, .section");
+  const observer = new window.IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          obs.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.18,
+    }
+  );
+  fadeSections.forEach((section) => {
+    section.classList.remove("is-visible");
+    observer.observe(section);
+  });
+});
 const yearElement = document.getElementById("year");
 const themeToggle = document.getElementById("themeToggle");
 const glassToggle = document.getElementById("glassToggle");
