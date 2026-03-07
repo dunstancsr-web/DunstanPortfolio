@@ -11,6 +11,7 @@
   --project-link-hover: #004a9c;
   --radius: 18px;
   --shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  --header-offset: 4.5rem;
 }
 
 :root[data-theme="dark"] {
@@ -43,6 +44,7 @@ body {
   background: radial-gradient(circle at top, var(--bg-top) 0%, var(--bg) 60%);
   line-height: 1.6;
   overflow-x: hidden;
+  padding-top: var(--header-offset);
 }
 
 .container {
@@ -51,11 +53,18 @@ body {
 }
 
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 20;
   padding: 0.55rem 0;
   background: transparent;
+}
+
+main,
+section[id] {
+  scroll-margin-top: calc(var(--header-offset) + 0.25rem);
 }
 
 .nav-wrap {
@@ -1014,6 +1023,10 @@ h3 {
 }
 
 @media (max-width: 560px) {
+  :root {
+    --header-offset: 4.25rem;
+  }
+
   .site-header {
     padding: 0.45rem 0;
   }
