@@ -33,6 +33,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
@@ -41,6 +42,7 @@ body {
   color: var(--text);
   background: radial-gradient(circle at top, var(--bg-top) 0%, var(--bg) 60%);
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 .container {
@@ -1009,4 +1011,31 @@ h3 {
   padding: 1rem 0 2rem;
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+@media (max-width: 560px) {
+  .site-header {
+    padding: 0.45rem 0;
+  }
+
+  .nav-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 1rem;
+  }
+
+  .nav-tab {
+    max-width: 100%;
+  }
+
+  .primary-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 0.3rem;
+  }
+
+  .primary-nav > a {
+    padding: 0.3rem 0.68rem;
+  }
 }
