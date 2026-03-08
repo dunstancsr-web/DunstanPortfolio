@@ -1,3 +1,57 @@
+.glass-tooltip {
+  position: absolute;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.92);
+  color: #2a2a2a;
+  padding: 0.36rem 1.1rem 0.36rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.93rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 18px rgba(34, 54, 92, 0.13), 0 1.5px 6px rgba(120, 140, 180, 0.08);
+  border: 1px solid rgba(180, 200, 240, 0.18);
+  pointer-events: none;
+  opacity: 0.98;
+  transition: opacity 0.18s, top 0.18s, left 0.18s;
+  white-space: pre-line;
+  min-width: 200px;
+  max-width: 340px;
+  text-align: center;
+  display: none;
+  backdrop-filter: blur(2.5px);
+}
+.footer-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.footer-accessibility {
+  display: flex;
+  align-items: center;
+}
+
+.site-footer .glass-toggle {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  max-width: 3.2rem;
+  min-width: 2.35rem;
+  padding-inline: 1rem;
+  border-width: 1px;
+  margin-right: 0.5rem;
+  background: rgba(255,255,255,0.10);
+  color: var(--muted);
+  box-shadow: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.site-footer .glass-toggle:hover,
+.site-footer .glass-toggle:focus-visible {
+  background: rgba(255,255,255,0.22);
+  color: var(--accent);
+}
 .project-card {
   opacity: 0;
   transform: translateY(40px) scale(0.98);

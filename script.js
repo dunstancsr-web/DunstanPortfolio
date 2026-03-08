@@ -1,3 +1,38 @@
+// Custom tooltip for accessibility button
+function createGlassTooltip() {
+  let tooltip = document.getElementById('glassTooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.id = 'glassTooltip';
+    tooltip.className = 'glass-tooltip';
+    document.body.appendChild(tooltip);
+  }
+  return tooltip;
+}
+
+function showGlassTooltip(e, text) {
+  const tooltip = createGlassTooltip();
+  tooltip.textContent = text;
+  tooltip.style.display = 'block';
+  // Wait for DOM to update so we can get offsetWidth/Height
+  setTimeout(() => {
+    const rect = e.target.getBoundingClientRect();
+    const scrollY = window.scrollY || window.pageYOffset;
+    const scrollX = window.scrollX || window.pageXOffset;
+    // Prefer below, fallback above if not enough space
+    let top = rect.bottom + 12 + scrollY;
+    if (window.innerHeight - rect.bottom < tooltip.offsetHeight + 24) {
+      top = rect.top - tooltip.offsetHeight - 12 + scrollY;
+    }
+    tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + scrollX + 'px';
+    tooltip.style.top = top + 'px';
+  }, 0);
+}
+
+function hideGlassTooltip() {
+  const tooltip = document.getElementById('glassTooltip');
+  if (tooltip) tooltip.style.display = 'none';
+}
 // Fade-in animation for sections
 document.addEventListener("DOMContentLoaded", () => {
   const fadeSections = document.querySelectorAll(".fade-section, .section");
@@ -178,9 +213,11 @@ const updateGlassToggleState = (mode) => {
   glassToggle.dataset.modeLabel = modeLabel;
   glassToggle.classList.toggle("is-accessibility-on", !isLiquid);
   glassToggle.classList.toggle("is-accessibility-off", isLiquid);
-  glassToggle.setAttribute("aria-label", `Liquid Glass: ${isLiquid ? "On" : "Off"}. Switch mode`);
-  glassToggle.title = `Liquid Glass: ${isLiquid ? "On" : "Off"} (${isLiquid ? "Very Liquid" : "Readable"})`;
+  const statusText = isLiquid ? "Accessibility features are OFF. Click to enable high readability mode." : "Accessibility features are ON. Click to return to liquid mode.";
+  glassToggle.setAttribute("aria-label", statusText);
   glassToggle.setAttribute("aria-pressed", String(isLiquid));
+  // Remove native tooltip
+  glassToggle.removeAttribute('title');
 };
 
 const applyGlassMode = (mode) => {
@@ -231,15 +268,23 @@ if (glassToggle) {
   glassToggle.addEventListener("click", () => {
     const currentGlassMode = document.documentElement.getAttribute("data-glass-mode") || "liquid";
     const nextGlassMode = getNextGlassMode(currentGlassMode);
-
     applyGlassMode(nextGlassMode);
-
     try {
       localStorage.setItem(glassStorageKey, nextGlassMode);
-    } catch (error) {
-      // no-op when storage is unavailable
-    }
+    } catch (error) {}
   });
+  glassToggle.addEventListener("mouseenter", (e) => {
+    const isLiquid = (document.documentElement.getAttribute("data-glass-mode") || "liquid") === "liquid";
+    const statusText = isLiquid ? "Accessibility features are OFF. Click to enable high readability mode." : "Accessibility features are ON. Click to return to liquid mode.";
+    showGlassTooltip(e, statusText);
+  });
+  glassToggle.addEventListener("mouseleave", hideGlassTooltip);
+  glassToggle.addEventListener("focus", (e) => {
+    const isLiquid = (document.documentElement.getAttribute("data-glass-mode") || "liquid") === "liquid";
+    const statusText = isLiquid ? "Accessibility features are OFF. Click to enable high readability mode." : "Accessibility features are ON. Click to return to liquid mode.";
+    showGlassTooltip(e, statusText);
+  });
+  glassToggle.addEventListener("blur", hideGlassTooltip);
 }
 
 systemThemeQuery.addEventListener("change", () => {
