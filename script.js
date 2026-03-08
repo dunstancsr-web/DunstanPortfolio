@@ -271,7 +271,7 @@ if (glassToggle) {
     applyGlassMode(nextGlassMode);
     try {
       localStorage.setItem(glassStorageKey, nextGlassMode);
-    } catch (error) {}
+    } catch (error) { }
   });
   glassToggle.addEventListener("mouseenter", (e) => {
     const isLiquid = (document.documentElement.getAttribute("data-glass-mode") || "liquid") === "liquid";
@@ -346,52 +346,59 @@ projectRevealButtons.forEach((button) => {
 });
 
 if (navLinks.length > 0) {
-  const sectionIds = navLinks
-    .map((link) => link.getAttribute("href"))
-    .filter((href) => href && href.length > 1)
-    .map((href) => href.slice(1));
+  // Map each nav link to its target section element
+  const sections = navLinks
+    .map((link) => {
+      const id = (link.getAttribute("href") || "").slice(1);
+      return id ? document.getElementById(id) : null;
+    })
+    .filter(Boolean);
 
-  const trackedSectionIds = sectionIds.filter((id) => id !== "home");
+  let currentActive = null;
 
-  const setActiveLink = (activeId) => {
+  const setActive = (el) => {
+    if (el === currentActive) return;
+    currentActive = el;
     navLinks.forEach((link) => {
-      const linkTarget = (link.getAttribute("href") || "").slice(1);
-      const isActive = linkTarget === activeId;
-
-      link.classList.toggle("is-active", isActive);
-
-      if (isActive) {
-        link.setAttribute("aria-current", "page");
-      } else {
-        link.removeAttribute("aria-current");
-      }
+      const id = (link.getAttribute("href") || "").slice(1);
+      const on = !!(el && el.id === id);
+      link.classList.toggle("is-active", on);
+      if (on) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
     });
   };
 
-  let currentActiveId = "home";
-  setActiveLink(currentActiveId);
+  const update = () => {
+    if (sections.length === 0) return;
 
-  const updateActiveLinkByScroll = () => {
-    const headerElement = document.querySelector(".site-header");
-    const headerHeight = headerElement ? headerElement.offsetHeight : 0;
-    const activationPoint = window.scrollY + headerHeight + 1;
-    let nextActiveId = "home";
+    const headerEl = document.querySelector(".site-header");
+    const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 0;
 
-    trackedSectionIds.forEach((id) => {
-      const section = document.getElementById(id);
+    // Walk sections in DOM order (top to bottom).
+    // The active section is the LAST one whose top has passed above the header bottom.
+    // If no section has passed the header yet, default to the first one.
+    let best = sections[0];
 
-      if (section && activationPoint >= section.offsetTop) {
-        nextActiveId = id;
+    for (const section of sections) {
+      const top = section.getBoundingClientRect().top;
+      if (top <= headerBottom) {
+        best = section; // keep updating: last one above header wins
       }
-    });
-
-    if (nextActiveId !== currentActiveId) {
-      currentActiveId = nextActiveId;
-      setActiveLink(currentActiveId);
     }
+
+    setActive(best);
   };
 
-  window.addEventListener("scroll", updateActiveLinkByScroll, { passive: true });
-  window.addEventListener("resize", updateActiveLinkByScroll);
-  updateActiveLinkByScroll();
+  // Listen to window scroll
+  window.addEventListener("scroll", update, { passive: true });
+  // Listen to ANY element scrolling on the page (capture phase)
+  document.addEventListener("scroll", update, { passive: true, capture: true });
+
+  window.addEventListener("resize", update);
+  // Re-evaluate when content loads (JSON projects expanding the page)
+  new ResizeObserver(update).observe(document.body);
+
+  // Initial check
+  setTimeout(update, 100);
+  update();
 }
