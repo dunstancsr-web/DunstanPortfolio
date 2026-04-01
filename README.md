@@ -18,6 +18,10 @@ Open `index.html` and update:
 
 Tip: keep each project to **Role + Action + Measurable Impact + Tools** for fast recruiter scanning.
 
+# To open file in local host, type the following in the terminal:
+python3 -m http.server 8000
+Then visit `http://localhost:8000`.
+
 ## Run locally
 
 You can open `index.html` directly in your browser, or use a local server:
