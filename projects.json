@@ -1,21 +1,16 @@
 [
   {
-    "title": "AI-enabled Streamlit Dashboard",
-    "summary": "Built a user-friendly data portal that allows anyone to analyze and export Snowflake data without needing SQL skills.",
+    "title": "AI-enabled Streamlit Dashboard V2",
+    "summary": "Developed a user-friendly data portal empowering Customer Service Agents to quickly analyze feedback, access AI-generated insights and recommendations, and explore or export review data seamlessly.",
     "impact": "Explored solutions that could help non-technical users to explore and download data on their own, with faster access to insights and AI summaries.",
     "tools": ["Streamlit", "Python", "Groq", "Ollama"],
     "links": [
       {
-        "url": "https://huggingface.co/spaces/dunstancsr/reviewsdataverse.streamlit",
+        "url": "https://sia-reviews-ai.streamlit.app/",
         "label": "Open Dashboard (Primary)",
         "badge": "Recommended"
-      },
-      {
-        "url": "https://reviewsdataverse.streamlit.app/",
-        "label": "Open Dashboard (Backup)"
       }
-    ],
-    "linkInfo": "Fallback tip: If the primary link does not load, use the backup link."
+    ]
   },
   {
     "title": "Data Visualization Tableau Dashboard",
@@ -47,5 +42,23 @@
     "impact": "1,200 annual manpower hours saved by automating 25% of the workflows.",
     "tools": ["SharePoint Admin", "Power BI", "Power Automate Flows"],
     "links": []
+  },
+  {
+    "title": "AI-enabled Streamlit Dashboard",
+    "summary": "Built a user-friendly data portal that allows anyone to analyze and export Snowflake data without needing SQL skills.",
+    "impact": "Explored solutions that could help non-technical users to explore and download data on their own, with faster access to insights and AI summaries.",
+    "tools": ["Streamlit", "Python", "Groq", "Ollama"],
+    "links": [
+      {
+        "url": "https://huggingface.co/spaces/dunstancsr/reviewsdataverse.streamlit",
+        "label": "Open Dashboard (Primary)",
+        "badge": "Recommended"
+      },
+      {
+        "url": "https://reviewsdataverse.streamlit.app/",
+        "label": "Open Dashboard (Backup)"
+      }
+    ],
+    "linkInfo": "Fallback tip: If the primary link does not load, use the backup link."
   }
 ]
