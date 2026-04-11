@@ -1,404 +1,323 @@
-// Custom tooltip for accessibility button
-function createGlassTooltip() {
-  let tooltip = document.getElementById('glassTooltip');
-  if (!tooltip) {
-    tooltip = document.createElement('div');
-    tooltip.id = 'glassTooltip';
-    tooltip.className = 'glass-tooltip';
-    document.body.appendChild(tooltip);
+/**
+ * Portfolio Main Script
+ * Organized in modules for better maintainability and readability.
+ */
+
+// --- Configuration & Constants ---
+const CONFIG = {
+  theme: {
+    storageKey: "dunstan-theme",
+    modes: ["auto", "light", "dark"],
+    icons: { auto: "◐", light: "☀︎", dark: "☾" }
+  },
+  glass: {
+    storageKey: "dunstan-glass-mode",
+    modes: ["liquid", "readable"],
+    icon: "Aa"
+  },
+  animation: {
+    threshold: 0.18,
+    cardDelay: 50 // ms
   }
-  return tooltip;
-}
+};
 
-function showGlassTooltip(e, text) {
-  const tooltip = createGlassTooltip();
-  tooltip.textContent = text;
-  tooltip.style.display = 'block';
-  // Wait for DOM to update so we can get offsetWidth/Height
-  setTimeout(() => {
-    const rect = e.target.getBoundingClientRect();
-    const scrollY = window.scrollY || window.pageYOffset;
-    const scrollX = window.scrollX || window.pageXOffset;
-    // Prefer below, fallback above if not enough space
-    let top = rect.bottom + 12 + scrollY;
-    if (window.innerHeight - rect.bottom < tooltip.offsetHeight + 24) {
-      top = rect.top - tooltip.offsetHeight - 12 + scrollY;
+// --- Utilities ---
+const Utils = {
+  getStorage: (key, fallback) => {
+    try {
+      return localStorage.getItem(key) || fallback;
+    } catch (e) {
+      return fallback;
     }
-    tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + scrollX + 'px';
-    tooltip.style.top = top + 'px';
-  }, 0);
-}
+  },
+  setStorage: (key, value) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      // Storage unavailable
+    }
+  },
+  safeQuery: (selector) => document.querySelector(selector),
+  safeQueryAll: (selector) => Array.from(document.querySelectorAll(selector))
+};
 
-function hideGlassTooltip() {
-  const tooltip = document.getElementById('glassTooltip');
-  if (tooltip) tooltip.style.display = 'none';
-}
-// Fade-in animation for sections
-document.addEventListener("DOMContentLoaded", () => {
-  const fadeSections = document.querySelectorAll(".fade-section, .section");
-  const observer = new window.IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((entry) => {
+// --- Tooltip Manager ---
+const TooltipManager = {
+  el: null,
+  
+  create() {
+    if (this.el) return this.el;
+    this.el = document.createElement('div');
+    this.el.id = 'glassTooltip';
+    this.el.className = 'glass-tooltip';
+    document.body.appendChild(this.el);
+    return this.el;
+  },
+
+  show(event, text) {
+    const tooltip = this.create();
+    tooltip.textContent = text;
+    tooltip.style.display = 'block';
+
+    // Micro-delay to allow for offset calculations
+    requestAnimationFrame(() => {
+      const rect = event.target.getBoundingClientRect();
+      const scrollY = window.scrollY || window.pageYOffset;
+      const scrollX = window.scrollX || window.pageXOffset;
+      
+      let top = rect.bottom + 12 + scrollY;
+      // Flip to top if not enough room below
+      if (window.innerHeight - rect.bottom < tooltip.offsetHeight + 24) {
+        top = rect.top - tooltip.offsetHeight - 12 + scrollY;
+      }
+
+      tooltip.style.left = `${rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + scrollX}px`;
+      tooltip.style.top = `${top}px`;
+    });
+  },
+
+  hide() {
+    if (this.el) this.el.style.display = 'none';
+  }
+};
+
+// --- Theme Manager ---
+const ThemeManager = {
+  mode: "auto",
+  btn: null,
+  systemQuery: window.matchMedia("(prefers-color-scheme: dark)"),
+
+  init() {
+    this.btn = Utils.safeQuery("#themeToggle");
+    this.mode = Utils.getStorage(CONFIG.theme.storageKey, "auto");
+    this.apply(this.mode);
+    this.bindEvents();
+  },
+
+  getResolved(mode) {
+    if (mode === "auto") return this.systemQuery.matches ? "dark" : "light";
+    return mode;
+  },
+
+  apply(mode) {
+    const resolved = this.getResolved(mode);
+    document.documentElement.setAttribute("data-theme", resolved);
+    document.documentElement.setAttribute("data-theme-mode", mode);
+    this.updateToggle(mode, resolved);
+    this.mode = mode;
+  },
+
+  updateToggle(mode, resolved) {
+    if (!this.btn) return;
+    const isDark = resolved === "dark";
+    this.btn.dataset.icon = CONFIG.theme.icons[mode];
+    this.btn.dataset.modeLabel = mode === "auto" ? `Theme: Auto (${resolved})` : `Theme: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
+    this.btn.setAttribute("aria-label", `Theme mode: ${mode}. Click to switch.`);
+    this.btn.setAttribute("aria-pressed", String(isDark));
+  },
+
+  toggle() {
+    const idx = CONFIG.theme.modes.indexOf(this.mode);
+    const next = CONFIG.theme.modes[(idx + 1) % CONFIG.theme.modes.length];
+    this.apply(next);
+    Utils.setStorage(CONFIG.theme.storageKey, next);
+  },
+
+  bindEvents() {
+    this.btn?.addEventListener("click", () => this.toggle());
+    this.systemQuery.addEventListener("change", () => {
+      if (this.mode === "auto") this.apply("auto");
+    });
+  }
+};
+
+// --- Glass/Accessibility Manager ---
+const GlassManager = {
+  mode: "liquid",
+  btn: null,
+
+  init() {
+    this.btn = Utils.safeQuery("#glassToggle");
+    this.mode = Utils.getStorage(CONFIG.glass.storageKey, "liquid");
+    this.apply(this.mode);
+    this.bindEvents();
+  },
+
+  apply(mode) {
+    document.documentElement.setAttribute("data-glass-mode", mode);
+    this.updateToggle(mode);
+    this.mode = mode;
+  },
+
+  updateToggle(mode) {
+    if (!this.btn) return;
+    const isLiquid = mode === "liquid";
+    this.btn.dataset.icon = CONFIG.glass.icon;
+    this.btn.dataset.modeLabel = isLiquid ? "Accessibility: Off" : "Accessibility: On";
+    this.btn.classList.toggle("is-accessibility-on", !isLiquid);
+    this.btn.classList.toggle("is-accessibility-off", isLiquid);
+    
+    const statusText = isLiquid 
+      ? "Accessibility features are OFF. Click to enable high readability mode." 
+      : "Accessibility features are ON. Click to return to liquid mode.";
+    
+    this.btn.setAttribute("aria-label", statusText);
+    this.btn.setAttribute("aria-pressed", String(!isLiquid));
+  },
+
+  toggle() {
+    const next = this.mode === "liquid" ? "readable" : "liquid";
+    this.apply(next);
+    Utils.setStorage(CONFIG.glass.storageKey, next);
+  },
+
+  bindEvents() {
+    if (!this.btn) return;
+    this.btn.addEventListener("click", () => this.toggle());
+    
+    const showTT = (e) => {
+      const text = this.mode === "liquid" 
+        ? "Accessibility features are OFF. Click to enable high readability mode." 
+        : "Accessibility features are ON. Click to return to liquid mode.";
+      TooltipManager.show(e, text);
+    };
+
+    this.btn.addEventListener("mouseenter", showTT);
+    this.btn.addEventListener("focus", showTT);
+    this.btn.addEventListener("mouseleave", () => TooltipManager.hide());
+    this.btn.addEventListener("blur", () => TooltipManager.hide());
+  }
+};
+
+// --- Scroll & Visibility Observer ---
+const ScrollObserver = {
+  observer: null,
+  navLinks: [],
+  sections: [],
+
+  init() {
+    this.navLinks = Utils.safeQueryAll('.primary-nav a[href^="#"]');
+    this.sections = this.navLinks.map(link => {
+      const id = link.getAttribute("href").slice(1);
+      return document.getElementById(id);
+    }).filter(Boolean);
+
+    this.initVisibilityObserver();
+    this.initScrollSpy();
+  },
+
+  initVisibilityObserver() {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add("is-visible");
-          obs.unobserve(entry.target);
+          this.observer.unobserve(entry.target);
         }
       });
-    },
-    {
-      threshold: 0.18,
-    }
-  );
-  fadeSections.forEach((section) => {
-    section.classList.remove("is-visible");
-    observer.observe(section);
-  });
+    }, { threshold: CONFIG.animation.threshold });
 
-  // Phase 2: Experiment - Fetch and log projects.json
-  fetch('projects.json')
-    .then(response => {
-      if (!response.ok) throw new Error('Network response was not ok');
-      return response.json();
-    })
-    .then(data => {
-      console.log('Loaded project data:', data);
-      // Phase 3: Dynamically add all project cards from JSON
-      if (Array.isArray(data) && data.length > 0) {
-        const projectGrid = document.querySelector('.project-grid');
-        if (projectGrid) {
-          data.forEach(project => {
-            const card = document.createElement('article');
-            card.className = 'project-card project-card--json';
-            // Render links if present
-            let linksHtml = '';
-            if (Array.isArray(project.links) && project.links.length > 0) {
-              linksHtml = '<div class="project-link-group" aria-label="Project links">';
-              project.links.forEach(link => {
-                linksHtml += `<a class="project-link" href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label || 'View Project'}${link.badge ? ` <span class='project-link-badge'>${link.badge}</span>` : ''} ↗</a>`;
-              });
-              if (project.linkInfo) {
-                linksHtml += `<span class="project-link-info" tabindex="0" role="note" aria-label="${project.linkInfo}" data-tooltip="${project.linkInfo}">i</span>`;
-              }
-              linksHtml += '</div>';
-            }
-            card.innerHTML = `
-              <h3>${project.title}</h3>
-              <p>${project.summary}</p>
-              ${linksHtml}
-              <ul>
-                ${project.role ? `<li><strong>Role:</strong> ${project.role}</li>` : ''}
-                <li><strong>Impact:</strong> ${project.impact}</li>
-                <li><strong>Tools:</strong> ${Array.isArray(project.tools) ? project.tools.join(', ') : project.tools}</li>
-              </ul>
-            `;
-            projectGrid.appendChild(card);
-          });
-          // Apple-esque transition: animate cards as they scroll into view
-          const cards = projectGrid.querySelectorAll('.project-card');
-          const cardObserver = new window.IntersectionObserver(
-            (entries, obs) => {
-              entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                  entry.target.classList.add('is-visible');
-                  obs.unobserve(entry.target);
-                }
-              });
-            },
-            { threshold: 0.18 }
-          );
-          cards.forEach(card => {
-            card.classList.remove('is-visible');
-            cardObserver.observe(card);
-          });
+    Utils.safeQueryAll(".fade-section, .section").forEach(el => {
+      el.classList.remove("is-visible");
+      this.observer.observe(el);
+    });
+  },
+
+  initScrollSpy() {
+    const update = () => {
+      if (this.sections.length === 0) return;
+      const header = Utils.safeQuery(".site-header");
+      const offset = header ? header.getBoundingClientRect().bottom : 0;
+      
+      let best = this.sections[0];
+      for (const section of this.sections) {
+        if (section.getBoundingClientRect().top <= offset) {
+          best = section;
         }
       }
-    })
-    .catch(error => {
-      console.error('Error loading projects.json:', error);
-    });
-});
-const yearElement = document.getElementById("year");
-const themeToggle = document.getElementById("themeToggle");
-const glassToggle = document.getElementById("glassToggle");
-const themeStorageKey = "dunstan-theme";
-const themeModes = ["auto", "light", "dark"];
-const glassStorageKey = "dunstan-glass-mode";
-const glassModes = ["liquid", "readable"];
-const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      
+      this.navLinks.forEach(link => {
+        const id = link.getAttribute("href").slice(1);
+        const isActive = best.id === id;
+        link.classList.toggle("is-active", isActive);
+        if (isActive) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+    };
 
-if (yearElement) {
-  yearElement.textContent = new Date().getFullYear();
-}
-
-const getPreferredTheme = () => {
-  if (systemThemeQuery.matches) {
-    return "dark";
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    new ResizeObserver(update).observe(document.body);
+    update();
   }
-
-  return "light";
 };
 
-const getResolvedTheme = (mode) => {
-  if (mode === "auto") {
-    return getPreferredTheme();
-  }
+// --- Project Loader ---
+const ProjectLoader = {
+  grid: null,
 
-  return mode;
-};
-
-const updateToggleState = (mode, resolvedTheme) => {
-  if (!themeToggle) {
-    return;
-  }
-
-  if (mode === "auto") {
-    themeToggle.dataset.icon = "◐";
-    themeToggle.dataset.modeLabel = `Theme: Auto (${resolvedTheme})`;
-    themeToggle.setAttribute("aria-label", `Theme mode: Auto (${resolvedTheme}). Switch mode`);
-    themeToggle.title = `Theme: Auto (${resolvedTheme})`;
-    themeToggle.setAttribute("aria-pressed", "false");
-    return;
-  }
-
-  const isDark = mode === "dark";
-  themeToggle.dataset.icon = isDark ? "☾" : "☀︎";
-  themeToggle.dataset.modeLabel = `Theme: ${isDark ? "Dark" : "Light"}`;
-  themeToggle.setAttribute("aria-label", `Theme mode: ${mode}. Switch mode`);
-  themeToggle.title = `Theme: ${mode}`;
-  themeToggle.setAttribute("aria-pressed", String(isDark));
-};
-
-const applyThemeMode = (mode) => {
-  const resolvedTheme = getResolvedTheme(mode);
-
-  document.documentElement.setAttribute("data-theme", resolvedTheme);
-  document.documentElement.setAttribute("data-theme-mode", mode);
-
-  updateToggleState(mode, resolvedTheme);
-};
-
-const getNextMode = (mode) => {
-  const modeIndex = themeModes.indexOf(mode);
-
-  if (modeIndex === -1 || modeIndex === themeModes.length - 1) {
-    return themeModes[0];
-  }
-
-  return themeModes[modeIndex + 1];
-};
-
-let initialMode = "auto";
-
-try {
-  const savedMode = localStorage.getItem(themeStorageKey);
-
-  if (savedMode && themeModes.includes(savedMode)) {
-    initialMode = savedMode;
-  }
-} catch (error) {
-  initialMode = "auto";
-}
-
-applyThemeMode(initialMode);
-
-const updateGlassToggleState = (mode) => {
-  if (!glassToggle) {
-    return;
-  }
-
-  const isLiquid = mode === "liquid";
-  const modeLabel = isLiquid ? "Accessibility: Off" : "Accessibility: On";
-
-  glassToggle.dataset.icon = "Aa";
-  glassToggle.dataset.modeLabel = modeLabel;
-  glassToggle.classList.toggle("is-accessibility-on", !isLiquid);
-  glassToggle.classList.toggle("is-accessibility-off", isLiquid);
-  const statusText = isLiquid ? "Accessibility features are OFF. Click to enable high readability mode." : "Accessibility features are ON. Click to return to liquid mode.";
-  glassToggle.setAttribute("aria-label", statusText);
-  glassToggle.setAttribute("aria-pressed", String(isLiquid));
-  // Remove native tooltip
-  glassToggle.removeAttribute('title');
-};
-
-const applyGlassMode = (mode) => {
-  document.documentElement.setAttribute("data-glass-mode", mode);
-  updateGlassToggleState(mode);
-};
-
-const getNextGlassMode = (mode) => {
-  const modeIndex = glassModes.indexOf(mode);
-
-  if (modeIndex === -1 || modeIndex === glassModes.length - 1) {
-    return glassModes[0];
-  }
-
-  return glassModes[modeIndex + 1];
-};
-
-let initialGlassMode = "liquid";
-
-try {
-  const savedGlassMode = localStorage.getItem(glassStorageKey);
-
-  if (savedGlassMode && glassModes.includes(savedGlassMode)) {
-    initialGlassMode = savedGlassMode;
-  }
-} catch (error) {
-  initialGlassMode = "liquid";
-}
-
-applyGlassMode(initialGlassMode);
-
-if (themeToggle) {
-  themeToggle.addEventListener("click", () => {
-    const currentMode = document.documentElement.getAttribute("data-theme-mode") || "auto";
-    const nextMode = getNextMode(currentMode);
-
-    applyThemeMode(nextMode);
+  async init() {
+    this.grid = Utils.safeQuery(".project-grid");
+    if (!this.grid) return;
 
     try {
-      localStorage.setItem(themeStorageKey, nextMode);
-    } catch (error) {
-      // no-op when storage is unavailable
+      const response = await fetch("projects.json");
+      if (!response.ok) throw new Error("Could not load projects");
+      const data = await response.json();
+      this.render(data);
+    } catch (err) {
+      console.error(err);
+      this.grid.innerHTML = `<p class="error-msg">Note: To view projects locally, please run a local server or visit the live site.</p>`;
     }
-  });
-}
+  },
 
-if (glassToggle) {
-  glassToggle.addEventListener("click", () => {
-    const currentGlassMode = document.documentElement.getAttribute("data-glass-mode") || "liquid";
-    const nextGlassMode = getNextGlassMode(currentGlassMode);
-    applyGlassMode(nextGlassMode);
-    try {
-      localStorage.setItem(glassStorageKey, nextGlassMode);
-    } catch (error) { }
-  });
-  glassToggle.addEventListener("mouseenter", (e) => {
-    const isLiquid = (document.documentElement.getAttribute("data-glass-mode") || "liquid") === "liquid";
-    const statusText = isLiquid ? "Accessibility features are OFF. Click to enable high readability mode." : "Accessibility features are ON. Click to return to liquid mode.";
-    showGlassTooltip(e, statusText);
-  });
-  glassToggle.addEventListener("mouseleave", hideGlassTooltip);
-  glassToggle.addEventListener("focus", (e) => {
-    const isLiquid = (document.documentElement.getAttribute("data-glass-mode") || "liquid") === "liquid";
-    const statusText = isLiquid ? "Accessibility features are OFF. Click to enable high readability mode." : "Accessibility features are ON. Click to return to liquid mode.";
-    showGlassTooltip(e, statusText);
-  });
-  glassToggle.addEventListener("blur", hideGlassTooltip);
-}
+  render(projects) {
+    if (!Array.isArray(projects)) return;
+    
+    const fragment = document.createDocumentFragment();
+    projects.forEach(project => {
+      const article = document.createElement("article");
+      article.className = "project-card";
+      
+      const linksHtml = (project.links || []).map(link => `
+        <a class="project-link" href="${link.url}" target="_blank" rel="noopener noreferrer">
+          ${link.label || "View Project"}${link.badge ? ` <span class="project-link-badge">${link.badge}</span>` : ""} ↗
+        </a>
+      `).join("");
 
-systemThemeQuery.addEventListener("change", () => {
-  const currentMode = document.documentElement.getAttribute("data-theme-mode") || "auto";
+      const infoHtml = project.linkInfo ? `
+        <span class="project-link-info" tabindex="0" role="note" aria-label="${project.linkInfo}" data-tooltip="${project.linkInfo}">i</span>
+      ` : "";
 
-  if (currentMode === "auto") {
-    applyThemeMode("auto");
-  }
-});
-
-const navLinks = Array.from(document.querySelectorAll('.primary-nav a[href^="#"]'));
-const projectRevealButtons = Array.from(document.querySelectorAll(".project-reveal-btn[aria-controls]"));
-const siteFooter = document.getElementById("siteFooter");
-
-
-projectRevealButtons.forEach((button) => {
-  const targetId = button.getAttribute("aria-controls");
-
-  if (!targetId) {
-    return;
-  }
-
-  const targetCard = document.getElementById(targetId);
-
-  if (!targetCard) {
-    return;
-  }
-
-  button.addEventListener("click", () => {
-    if (targetId === "projectCard4") {
-      targetCard.classList.add("is-expanded");
-      button.setAttribute("aria-expanded", "true");
-      button.setAttribute("aria-label", "Project details expanded");
-
-      if (siteFooter) {
-        siteFooter.hidden = false;
-      }
-
-      button.remove();
-      return;
-    }
-
-    const isExpanded = targetCard.classList.toggle("is-expanded");
-    const isIconOnly = button.classList.contains("project-reveal-btn--icon-only");
-
-    button.setAttribute("aria-expanded", String(isExpanded));
-
-    if (!isIconOnly) {
-      button.textContent = isExpanded ? "Show Less" : "Show More";
-    } else {
-      const tooltipText = isExpanded ? "Show Less" : "Show More";
-
-      button.title = tooltipText;
-      button.setAttribute("data-tooltip", tooltipText);
-    }
-
-    button.setAttribute("aria-label", isExpanded ? "Collapse project details" : "Expand project details");
-  });
-});
-
-if (navLinks.length > 0) {
-  // Map each nav link to its target section element
-  const sections = navLinks
-    .map((link) => {
-      const id = (link.getAttribute("href") || "").slice(1);
-      return id ? document.getElementById(id) : null;
-    })
-    .filter(Boolean);
-
-  let currentActive = null;
-
-  const setActive = (el) => {
-    if (el === currentActive) return;
-    currentActive = el;
-    navLinks.forEach((link) => {
-      const id = (link.getAttribute("href") || "").slice(1);
-      const on = !!(el && el.id === id);
-      link.classList.toggle("is-active", on);
-      if (on) link.setAttribute("aria-current", "page");
-      else link.removeAttribute("aria-current");
+      article.innerHTML = `
+        <h3>${project.title}</h3>
+        <p>${project.summary}</p>
+        ${linksHtml ? `<div class="project-link-group">${linksHtml}${infoHtml}</div>` : ""}
+        <ul>
+          ${project.role ? `<li><strong>Role:</strong> ${project.role}</li>` : ""}
+          <li><strong>Impact:</strong> ${project.impact}</li>
+          <li><strong>Tools:</strong> ${Array.isArray(project.tools) ? project.tools.join(", ") : project.tools}</li>
+        </ul>
+      `;
+      fragment.appendChild(article);
     });
-  };
 
-  const update = () => {
-    if (sections.length === 0) return;
+    this.grid.innerHTML = "";
+    this.grid.appendChild(fragment);
 
-    const headerEl = document.querySelector(".site-header");
-    const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 0;
+    // Re-observe new cards
+    Utils.safeQueryAll(".project-card").forEach(card => ScrollObserver.observer.observe(card));
+  }
+};
 
-    // Walk sections in DOM order (top to bottom).
-    // The active section is the LAST one whose top has passed above the header bottom.
-    // If no section has passed the header yet, default to the first one.
-    let best = sections[0];
+// --- Main Init ---
+document.addEventListener("DOMContentLoaded", () => {
+  // Update year
+  const yearEl = Utils.safeQuery("#year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    for (const section of sections) {
-      const top = section.getBoundingClientRect().top;
-      if (top <= headerBottom) {
-        best = section; // keep updating: last one above header wins
-      }
-    }
-
-    setActive(best);
-  };
-
-  // Listen to window scroll
-  window.addEventListener("scroll", update, { passive: true });
-  // Listen to ANY element scrolling on the page (capture phase)
-  document.addEventListener("scroll", update, { passive: true, capture: true });
-
-  window.addEventListener("resize", update);
-  // Re-evaluate when content loads (JSON projects expanding the page)
-  new ResizeObserver(update).observe(document.body);
-
-  // Initial check
-  setTimeout(update, 100);
-  update();
-}
+  // Initialize Modules
+  ThemeManager.init();
+  GlassManager.init();
+  ScrollObserver.init();
+  ProjectLoader.init();
+});
