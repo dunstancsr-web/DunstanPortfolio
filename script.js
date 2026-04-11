@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(section);
   });
 
-  // Phase 2: Experiment - Fetch and log projects.json
+  // Fetch project data and dynamically render project cards
   fetch('projects.json')
     .then(response => {
       if (!response.ok) throw new Error('Network response was not ok');
@@ -62,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then(data => {
       console.log('Loaded project data:', data);
-      // Phase 3: Dynamically add all project cards from JSON
       if (Array.isArray(data) && data.length > 0) {
         const projectGrid = document.querySelector('.project-grid');
         if (projectGrid) {
@@ -296,54 +295,6 @@ systemThemeQuery.addEventListener("change", () => {
 });
 
 const navLinks = Array.from(document.querySelectorAll('.primary-nav a[href^="#"]'));
-const projectRevealButtons = Array.from(document.querySelectorAll(".project-reveal-btn[aria-controls]"));
-const siteFooter = document.getElementById("siteFooter");
-
-
-projectRevealButtons.forEach((button) => {
-  const targetId = button.getAttribute("aria-controls");
-
-  if (!targetId) {
-    return;
-  }
-
-  const targetCard = document.getElementById(targetId);
-
-  if (!targetCard) {
-    return;
-  }
-
-  button.addEventListener("click", () => {
-    if (targetId === "projectCard4") {
-      targetCard.classList.add("is-expanded");
-      button.setAttribute("aria-expanded", "true");
-      button.setAttribute("aria-label", "Project details expanded");
-
-      if (siteFooter) {
-        siteFooter.hidden = false;
-      }
-
-      button.remove();
-      return;
-    }
-
-    const isExpanded = targetCard.classList.toggle("is-expanded");
-    const isIconOnly = button.classList.contains("project-reveal-btn--icon-only");
-
-    button.setAttribute("aria-expanded", String(isExpanded));
-
-    if (!isIconOnly) {
-      button.textContent = isExpanded ? "Show Less" : "Show More";
-    } else {
-      const tooltipText = isExpanded ? "Show Less" : "Show More";
-
-      button.title = tooltipText;
-      button.setAttribute("data-tooltip", tooltipText);
-    }
-
-    button.setAttribute("aria-label", isExpanded ? "Collapse project details" : "Expand project details");
-  });
-});
 
 if (navLinks.length > 0) {
   // Map each nav link to its target section element
